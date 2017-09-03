@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "PingMe Chrome Plugin",
+  "description": "This extension will give you notifications when a torrnet of the required quality is online",
+  "version": "1.0",
+
+  "browser_action": {
+   
+   "default_popup": "popup.html"
+  },
+    "background": {
+    "scripts": ["popup.js"],
+    "persistent": false
+  },
+  "permissions": [
+   "activeTab",
+    "storage"
+   ]
+}
