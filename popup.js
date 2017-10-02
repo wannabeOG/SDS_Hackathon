@@ -19,7 +19,9 @@ function addShow(e){
 			"name":tvshow,
 			"season":season,
 			"episode":episode,
-			"quality":quality
+			"quality":quality,
+			"status":0,
+			"results":[]
 		};
 		
 		var data = createJSONobject();
@@ -55,7 +57,7 @@ function storeJsonObject(shows){
 
 function deleteShow(){
 	shows = createJSONobject();
-	shows.splice(this.id,1);
+	shows.splice(this.class,1);
 	storeJsonObject(shows);
 	updateDOM();
 }
@@ -68,33 +70,82 @@ function updateDOM(){
     }
     for (var i = 0; i < Shows.length; i++) {
 		var node = document.createElement("LI");
-		node.style.margin = '5px';
+		node.style.marginTop = '5px';
+		node.style.marginBottom = '5px';
 		var img = document.createElement("IMG");
+		
+		var imgTorrent = document.createElement("IMG");
+		try{
+			if (Shows[i].status==1) {
+				imgTorrent.setAttribute('src','torrent_active.png');
+				imgTorrent.onclick = Details;	
+			}
+			else{
+				imgTorrent.setAttribute('src','torrent_inactive.png');
+			}
+		}
+		catch(error){
+			imgTorrent.setAttribute('src','torrent_inactive.png');	
+		}
+		imgTorrent.setAttribute('class',i);
+		imgTorrent.style.float = 'right';
+		imgTorrent.style.marginRight = '10px';
+		
 		img.setAttribute('src','trash.png');
-		img.setAttribute('id',i);
+		img.setAttribute('class',i);
 		img.style.float = 'right';
 		img.onclick = deleteShow;
 		var textNode = document.createTextNode(Shows[i].name);
 		node.appendChild(textNode);
 		node.appendChild(img);
+		node.appendChild(imgTorrent);
 		list.appendChild(node);
 	}
 }
 
+function Details(){
+	result = createJSONobject()[this.className].results;
+	console.log(result);
+	var resultDiv = document.getElementById('results');
+	document.getElementById('heading').innerHTML = "Torrent Found";
+	var list = document.getElementById('resultList');
+	for (var i = 0; i < result.length; i++) {
+		var node = document.createElement("LI");
+		var link = document.createElement("A");
+		link.setAttribute('href','https://proxyspotting.in'+result[i].link);
+		link.setAttribute('target','_blank')
+		link.appendChild(document.createTextNode(result[i].TorrentName));
+		node.appendChild(link);
+		list.appendChild(node);
+	}
+}
+var k = 0;
+function updateStatus(data){
+	shows = createJSONobject();
+	shows[k].status = 1;
+	shows[k].results = data.results;
+	storeJsonObject(shows);
+	k++;
+}
+
 function checkForUpdates(){
-	var show = createJSONobject();
+	var shows = createJSONobject();
 	var headers = new Headers({
 		'Content-type':'application/x-www-form-urlencoded'
 	});
-	var request = new Request('http://localhost:8000/search/',{
-		method:'post',
-		mode:'cors',
-		headers:headers,
-		body:"name="+show[0].name+"&season="+show[0].season+"&episode="+show[0].episode+"&quality="+show[0].quality
-	});
-	fetch(request)
-	.then((res) => res.json() )
-	.then(function(data){
-		console.log(data);
-	});
+	for (var i = 0; i < shows.length; i++) {
+		k=0;
+		var request = new Request('http://localhost:8000/search/',{
+			method:'post',
+			mode:'cors',
+			headers:headers,
+			body:"name="+shows[i].name+"&season="+shows[i].season+"&episode="+shows[i].episode+"&quality="+shows[i].quality
+		});
+		fetch(request)
+		.then((res) => res.json() )
+		.then(function(data){
+			updateStatus(data);
+		})
+		.then(updateDOM);
+	}
 }
