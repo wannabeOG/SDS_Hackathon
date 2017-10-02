@@ -21,43 +21,54 @@ window.onload= function() {
 		};
 		
 		var previousData = window.localStorage.getItem('jsonArray');
-        window.localStorage.setItem('jsonArray', previousData + "++" + JSON.stringify(jsonObject));
-		console.log({"myArray": window.localStorage.getItem("jsonArray").split("++")});
+        if(previousData)
+        	window.localStorage.setItem('jsonArray', previousData + "++" + JSON.stringify(jsonObject));
+		else{
+			window.localStorage.setItem('jsonArray', JSON.stringify(jsonObject));	
+		}
+		console.log(createJSONobject());
 		updateDOM();
 		checkForUpdates();
 	}
 
 }
 
+function createJSONobject(){
+	var shows = [];
+	var myArray = window.localStorage.getItem("jsonArray").split("++");
+	for (var i = 0; i < myArray.length; i++) {
+		shows[i] = JSON.parse(myArray[i]);
+	}
+	return shows;
+}
+
 function updateDOM(){
-	var Shows = window.localStorage.getItem("jsonArray").split("++");
+	var Shows = createJSONobject();
 	var list = document.getElementsByTagName("ul")[0];
-	for (var i = 1; i < Shows.length; i++) {
+	for (var i = 0; i < Shows.length; i++) {
 		var node = document.createElement("LI");
-		var textNode = document.createTextNode(JSON.parse(Shows[i]).name);
+		var textNode = document.createTextNode(Shows[i].name);
 		node.appendChild(textNode);
 		list.appendChild(node);
 	}
 }
 
 function checkForUpdates(){
-	var Shows = window.localStorage.getItem("jsonArray").split("++");
-	var show = JSON.parse(Shows[Shows.length-1]);
+	var show = createJSONobject();
 	
 	console.log(show);
-
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST","http://localhost:8000/search/",true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	
-	xhttp.onreadystatechange = function() {
-  		if (this.readyState == 4 && this.status == 200) {
-    		if(this.response.success == 1){
-    			alert("Torrent Found");
-    			document.getElementById("#response").innerHTML = this.response.SearchInfo.name + " Torrent found";
-    		}
-  		}
-	};
-	
-	xhttp.send("name="+show.name+"&season="+show.season+"&episode="+show.episode+"&quality="+show.quality);
+	var headers = new Headers({
+		'Content-type':'application/x-www-form-urlencoded'
+	});
+	var request = new Request('http://localhost:8000/search/',{
+		method:'post',
+		mode:'cors',
+		headers:headers,
+		body:"name="+show[0].name+"&season="+show[0].season+"&episode="+show[0].episode+"&quality="+show[0].quality
+	});
+	fetch(request)
+	.then((res) => res.json() )
+	.then(function(data){
+		console.log(data);
+	});
 }
