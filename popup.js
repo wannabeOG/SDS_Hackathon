@@ -58,7 +58,6 @@ function storeJsonObject(shows){
 function deleteShow(){
 	shows = createJSONobject();
 	shows.splice(this.class,1);
-	responses.splice(this.class,1);
 	storeJsonObject(shows);
 	updateDOM();
 }
