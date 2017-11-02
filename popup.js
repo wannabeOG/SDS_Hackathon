@@ -149,3 +149,23 @@ function checkForUpdates(){
 		.then(updateDOM);
 	}
 }
+
+/*if window.webkitNotifications {
+	console.log('Your browser supports notifications')
+}
+else {
+	console.log('Your browser does not support notifications')
+}*/
+
+// Since this is a google chrome extension, the above snippet of code will be meaningless
+
+if (window.webkitNotifications.checkPermission() == 0) {
+    var myNotification = window.webkitNotifications.createNotification('torrent_active.png', 'Item Saved', 'Click to view');
+    myNotification.onclick = function () {
+    	
+    }
+    myNotification.show(); // Good to go, you can create a notification.
+} else {
+    window.webkitNotifications.requestPermission(function(){});
+}
+
