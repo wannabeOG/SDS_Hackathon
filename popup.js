@@ -123,7 +123,6 @@ var k = 0;
 function updateStatus(data){
 	shows = createJSONobject();
 	shows[k].status = 1;
-	desktopNotifications();
 	shows[k].results = data.results;
 	storeJsonObject(shows);
 	k++;
@@ -131,16 +130,11 @@ function updateStatus(data){
 
 function checkForUpdates(){
 	var shows = createJSONobject();
-	var headers = new Headers({
-		'Content-type':'application/x-www-form-urlencoded'
-	});
 	for (var i = 0; i < shows.length; i++) {
 		k=0;
-		var request = new Request('http://localhost:8000/search/',{
-			method:'post',
+		var request = new Request(`https://pingme-api.herokuapp.com/search/?name=${shows[i].name}&season=${shows[i].season}&episode=${shows[i].episode}&quality=${shows[i].quality}`,{
+			method:'get',
 			mode:'cors',
-			headers:headers,
-			body:`name=${shows[i].name}&season=${shows[i].season}&episode=${shows[i].episode}&quality=${shows[i].quality}`
 		});
 		fetch(request)
 		.then((res) => res.json() )
