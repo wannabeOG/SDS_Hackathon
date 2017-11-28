@@ -77,7 +77,6 @@ function updateDOM(){
 		var imgTorrent = document.createElement("IMG");
 		try{
 			if (Shows[i].status==1) {
-				//desktopNotifications();
 				imgTorrent.setAttribute('src','torrent_active.png');
 				imgTorrent.onclick = Details;	
 			}
@@ -141,7 +140,7 @@ function checkForUpdates(){
 			method:'post',
 			mode:'cors',
 			headers:headers,
-			body:"name="+shows[i].name+"&season="+shows[i].season+"&episode="+shows[i].episode+"&quality="+shows[i].quality
+			body:`name=${shows[i].name}&season=${shows[i].season}&episode=${shows[i].episode}&quality=${shows[i].quality}`
 		});
 		fetch(request)
 		.then((res) => res.json() )
@@ -151,25 +150,3 @@ function checkForUpdates(){
 		.then(updateDOM);
 	}
 }
-
-/*if window.webkitNotifications {
-	console.log('Your browser supports notifications')
-}
-else {
-	console.log('Your browser does not support notifications')
-}*/
-
-// Since this is a google chrome extension, the above snippet of code will be meaningless
-
-function desktopNotifications() {
-	if (window.webkitNotifications.checkPermission() == 0) {
-    var myNotification = window.webkitNotifications.createNotification('torrent_active.png', 'Torrent Found', 'Click to view');
-    //myNotification.onclick = function () {
-
-    //}
-    myNotification.show(); // Good to go, you can create a notification.
-} else {
-    window.webkitNotifications.requestPermission(function(){});
-
-}
-
