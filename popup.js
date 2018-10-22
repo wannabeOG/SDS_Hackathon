@@ -41,7 +41,7 @@ function createJSONobject(){
 	}
 	return shows;
 }
-
+// Happens to do something, I have no idea what, it works pretty well though
 function storeJsonObject(shows){
 	var string = "";
 	for (var i = 0; i<shows.length; i++) {
